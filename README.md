@@ -44,7 +44,7 @@ python3 canonical/api2can_gen.py [SWAGGER_DIRECTORY] [OUTPUT_DIRECTORY]
 pip3 install -r requirements.txt
 python3 rest/restapi.py 8080
 ```
-- Next browse http://localhost:8080/
+- Next browse http://localhost:8080/ for swagger documentation of the API
 - Invoke "/extract-operations" to extract the operations of the given YAML file
 - Invoke "/generate-canonicals" to generate canonical utterances for each operation. The payload of the request is a list of operations extracted by the "" operation.
 ```json
