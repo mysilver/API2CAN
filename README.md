@@ -46,7 +46,28 @@ python3 rest/restapi.py 8080
 ```
 - Next browse http://localhost:8080/
 - Invoke "/extract-operations" to extract the operations of the given YAML file
-- Invoke "/generate-canonicals" to generate canonical utterances for each operation. The payload of the request is the same as the output generated in the previous step.
+- Invoke "/generate-canonicals" to generate canonical utterances for each operation. The payload of the request is a list of operations extracted by the "" operation.
+```json
+# Here is a sample payload  
+[
+      {
+        "base_path": "/forex-quotes",
+        "desc": "Get quotes",
+        "intent": "get__forex-quotes_quotes",
+        "summary": "Get quotes for all symbols",
+        "url": "/forex-quotes/quotes",
+        "verb": "get"
+      },
+      {
+        "base_path": "/forex-quotes",
+        "desc": "Symbol List",
+        "intent": "get__forex-quotes_symbols",
+        "summary": "Get a list of symbols for which we provide real-time quotes",
+        "url": "/forex-quotes/symbols",
+        "verb": "get"
+      }
+  ]
+```
 
 ## More information
 For more information please refer to the following papars:

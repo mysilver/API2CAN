@@ -16,7 +16,7 @@ from swagger.entities import Operation, IntentCanonical
 from swagger.resource_extractor import extract_resources
 from swagger.swagger_analysis import SwaggerAnalyser
 from swagger.swagger_utils import ParamUtils
-from utils.corenlp import nlp
+import corenlp as nlp
 from utils.text import replace_last, to_sentences
 
 common_verbs = {'get', 'create', 'delete', 'remove', 'eliminate', 'update', 'replace', 'return', 'check', 'set', 'list'}

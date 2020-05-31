@@ -1,24 +1,26 @@
 import logging
+import os
+import sys
 import traceback
 import warnings
-import sys
-import werkzeug
-from flask import Flask, jsonify, request
-from flask_restx import Api, Resource, reqparse, abort, fields, inputs, Model
 
-from canonical.api2can_gen import TrainingExprGenerator
-from canonical.rule_based import RuleBasedCanonicalGenerator, param_sampler
-# from paraphrase.paraphrasers import Paraphraser, PARAPHRASERS
-from swagger.entities import Operation, Param, IntentCanonical, API
+from swagger.entities import API, Param
 from swagger.swagger_analysis import SwaggerAnalyser
 from flask_cors import CORS
+import werkzeug
+from flask import Flask, jsonify, abort, request
+from flask_restx import Api, reqparse, fields, Resource
+
+sys.path.append(os.getcwd())
+from canonical.api2can_gen import TrainingExprGenerator
+from canonical.rule_based import RuleBasedCanonicalGenerator, param_sampler
 
 app = Flask(__name__)
 CORS(app)
 api = Api(app,
           default="APIs",
-          title="REST2Bot APIs",
-          description="A collection of APIs to automate bot development")
+          title="API2Can",
+          description="A service to generate canonical utterances for APIs")
 
 param_model = api.model('Parameter', {
     "name": fields.String,
@@ -42,7 +44,6 @@ paraphrase_model = api.model('Paraphrase', {
 canonical_paraphrase_model = api.model('Canonical Paraphrases', {
     "intent": fields.String,
     "canonical": fields.String,
-    # "entities": fields.List(fields.Nested(param_model)),
     "paraphrases": fields.List(fields.Nested(paraphrase_model)),
 
 })
@@ -51,7 +52,6 @@ canonical_model = api.model('IntentCanonicals', {
     "intent": fields.String,
     "canonical": fields.String,
     "entities": fields.List(fields.Nested(param_model)),
-    # "paraphrases": fields.List(fields.Nested(paraphrase_model)),
 })
 expression_model = api.model('Expression', {
     "text": fields.String,
@@ -80,21 +80,11 @@ api_model = api.model('API', {
 
 expr_gen = TrainingExprGenerator()
 rule_gen = RuleBasedCanonicalGenerator()
-# paraphraser = Paraphraser()
-
 yaml_parser = reqparse.RequestParser()
 yaml_parser.add_argument('yaml', type=werkzeug.datastructures.FileStorage, location='files', required=True)
 
 query_parser = reqparse.RequestParser()
 query_parser.add_argument('n', type=int, help="number of sampled values for the given entity")
-
-# paraphraser_parser = reqparse.RequestParser()
-# paraphraser_parser.add_argument('params', type=int, help="number of sampled values for each entities", location='args')
-# paraphraser_parser.add_argument('count', type=int, help="number of paraphrases", location='args')
-# paraphraser_parser.add_argument('score', type=inputs.boolean, default=False, help="score generated paraphrases",
-#                                 location='args')
-# paraphraser_parser.add_argument('paraphrasers', type=str, action="append", location='args',
-#                                 help='Pick from: {}'.format(", ".join(PARAPHRASERS)))
 
 TRANSLATORS = {
     "RULE",
@@ -104,12 +94,6 @@ TRANSLATORS = {
 canonical_parser = reqparse.RequestParser()
 canonical_parser.add_argument('translators', type=str, action="append", location='args',
                               help='Pick from: {}'.format(", ".join(TRANSLATORS)))
-
-
-#
-# platform_parser = reqparse.RequestParser()
-# platform_parser.add_argument('platform', choices=["Wit.ai"],
-#                               help='Pick from: {}'.format(", ".join(["Wit.ai"])))
 
 
 @api.route("/extract-operations")
@@ -130,11 +114,6 @@ class Specs(Resource):
                 doc = SwaggerAnalyser(swagger=yaml).analyse()
                 ret.append(doc.to_json())
 
-            # ret = {
-            #     "apis": ret,
-            #     # "size": len(ret),
-            #     "success": True,
-            # }
             return jsonify(ret)
         except Exception as e:
             abort(501, message="Server is not able to process the request; {}".format(e))
@@ -256,6 +235,7 @@ def convert_api(api):
 
 if __name__ == '__main__':
     port = 8080
+
     if len(sys.argv) > 1:
         port = int(sys.argv[1])
     LOGGER = logging.getLogger("artemis.fileman.disk_memoize")

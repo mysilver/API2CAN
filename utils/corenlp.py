@@ -1,6 +1,7 @@
 from time import sleep
 
 from stanfordcorenlp import StanfordCoreNLP
+import os
 
 import requests
 
@@ -15,10 +16,13 @@ except Exception as e:
 
 
 try:
+    if 'CORENLP_HOME' not in os.environ:
+        print("CORENLP_HOME is not set; set it as an  environment variable.")
+        exit(0)
     sleep(3)
     print("Loading CoreNLP")
-    nlp = StanfordCoreNLP("/media/may/Data/servers/stanford-corenlp-full-2018-10-05", port=9000)
+    nlp = StanfordCoreNLP(os.environ['CORENLP_HOME'], port=9000)
     print("CoreNLP loaded")
 except Exception as e:
     print("Unable to run CoreNLP", e)
-    nlp = None
+    exit(0)
