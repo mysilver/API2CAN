@@ -192,7 +192,7 @@ class ResourceDelexicalization(Resource):
         o = Operation.from_json(request.json)
         text, resources = delexicalize(o)
         return jsonify({
-            "text": text,
+            "delexicalized-operation": text,
             "resources": resources
         })
 
