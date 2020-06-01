@@ -1,5 +1,5 @@
 # API2CAN
-API2CAN consists of three main parts:
+API2CAN consists of the following parts:
 - A dataset to train machine translation models for translation REST operations to Natural Language Sentences
 - A service to extract resources from an operations
 - A service implementing the resource-based delexicalization
@@ -77,7 +77,7 @@ python3 rest/restapi.py 8080
 ## Resource-based Delexiclization
 - To extract resources (& delexicalize an operation) in an operation use the "/resources/delexicalize" operation with an operation in the payload:
  ```json
-# sample payload
+POST /resources/delexicalize
      {
         "base_path": "/forex-quotes",
         "desc": "Get quotes",
@@ -86,8 +86,18 @@ python3 rest/restapi.py 8080
         "url": "/forex-quotes/quotes",
         "verb": "get"
      }
-
+```
 - To convet back a delexicalized sentence, you can invoke "/resources/delexicalize?delexicalized_text=" operation with an operation in the payload and the sentence in a query parameter:
+ ```json
+POST /resources/delexicalize?delexicalized_text=get Collection_1
+     {
+        "base_path": "/forex-quotes",
+        "desc": "Get quotes",
+        "intent": "get__forex-quotes_quotes",
+        "summary": "Get quotes for all symbols",
+        "url": "/forex-quotes/quotes",
+        "verb": "get"
+     }
 ```
 ## More information
 For more information please refer to the following papars:
