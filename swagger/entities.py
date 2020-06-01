@@ -319,6 +319,7 @@ RESOURCE_TYPES = [UNKNOWN_RESOURCE, COLLECTION, SINGLETON, ATTRIBUTE_RESOURCE, A
                   BASE_VERB_RESOURCE, BASE_NOUN_RESOURCE, METHOD_NAME_RESOURCE]
 
 
+
 class Resource:
     @staticmethod
     def is_resource_identifier(term):

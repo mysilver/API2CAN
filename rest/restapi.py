@@ -8,16 +8,21 @@ from flask_cors import CORS
 from flask import Flask, jsonify, abort, request
 from flask_restx import Api, reqparse, fields, Resource
 
+from swagger.resource_delexicalization import delexicalize
+from swagger.templatetization import Templatetizer
+
 sys.path.append(os.getcwd())
 from canonical.api2can_gen import TrainingExprGenerator
 from canonical.rule_based import RuleBasedCanonicalGenerator, param_sampler
-from swagger.entities import API, Param
+from swagger.entities import API, Param, Operation
 from swagger.swagger_analysis import SwaggerAnalyser
+from swagger.resource_extractor import extract_resources
 
 app = Flask(__name__)
 CORS(app)
 api = Api(app,
           default="APIs",
+          version="0.1.1",
           title="API2Can",
           description="A service to generate canonical utterances for APIs")
 
@@ -94,8 +99,11 @@ canonical_parser = reqparse.RequestParser()
 canonical_parser.add_argument('translators', type=str, action="append", location='args',
                               help='Pick from: {}'.format(", ".join(TRANSLATORS)))
 
+text_parser = reqparse.RequestParser()
+text_parser.add_argument('delexicalized_text', type=str, location='args')
 
-@api.route("/extract-operations")
+
+@api.route("/operations/extract")
 class Specs(Resource):
     @api.expect(yaml_parser)
     @api.response(200, "Success", [api_model])
@@ -119,7 +127,7 @@ class Specs(Resource):
             traceback.print_stack()
 
 
-@api.route("/generate-canonicals")
+@api.route("/operations/generate-canonicals")
 class Canonicals(Resource):
     @api.expect(canonical_parser, [operation_model])
     @api.response(200, "Success", [canonical_model])
@@ -175,6 +183,30 @@ class EntityValues(Resource):
         except Exception as e:
             print(e)
             abort(400, message=e)
+
+
+@api.route("/operations/resources/delexicalize")
+class ResourceDelexicalization(Resource):
+    @api.expect(operation_model)
+    def post(self):
+        o = Operation.from_json(request.json)
+        text, resources = delexicalize(o)
+        return jsonify({
+            "text": text,
+            "resources": resources
+        })
+
+
+@api.route("/operations/resources/lexicalize")
+class ResourceLexicalization(Resource):
+    @api.expect(operation_model, text_parser)
+    def post(self):
+        o = Operation.from_json(request.json)
+        # resources = [r.to_json() for r in extract_resources(o)]
+        args = text_parser.parse_args()
+        text = args.get("delexicalized_text")
+
+        return Templatetizer.to_expression(o, [text])
 
 
 def convert_api(api):

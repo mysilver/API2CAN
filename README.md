@@ -45,8 +45,8 @@ pip3 install -r requirements.txt
 python3 rest/restapi.py 8080
 ```
 - Next browse http://localhost:8080/ for swagger documentation of the API
-- Invoke "/extract-operations" to extract the operations of the given YAML file
-- Invoke "/generate-canonicals" to generate canonical utterances for each operation. The payload of the request is a list of operations extracted by the "" operation.
+- Invoke "/operations/extract" to extract the operations of the given YAML file
+- Invoke "/operations/generate-canonicals" to generate canonical utterances for each operation. The payload of the request is a list of operations extracted by the "/operations/extract" operation.
 ```json
 # Here is a sample payload  
 [
@@ -68,7 +68,21 @@ python3 rest/restapi.py 8080
       }
   ]
 ```
+## Resource-based Delexiclization
+- To extract resources (& delexicalize an operation) in an operation use the "/resources/delexicalize" operation with an operation in the payload:
+ ```json
+# sample payload
+     {
+        "base_path": "/forex-quotes",
+        "desc": "Get quotes",
+        "intent": "get__forex-quotes_quotes",
+        "summary": "Get quotes for all symbols",
+        "url": "/forex-quotes/quotes",
+        "verb": "get"
+     }
 
+- To convet back a delexicalized sentence, you can invoke "/resources/delexicalize?delexicalized_text=" operation with an operation in the payload and the sentence in a query parameter:
+```
 ## More information
 For more information please refer to the following papars:
 ```sh
