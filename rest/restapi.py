@@ -3,17 +3,16 @@ import os
 import sys
 import traceback
 import warnings
-
-from swagger.entities import API, Param
-from swagger.swagger_analysis import SwaggerAnalyser
-from flask_cors import CORS
 import werkzeug
+from flask_cors import CORS
 from flask import Flask, jsonify, abort, request
 from flask_restx import Api, reqparse, fields, Resource
 
 sys.path.append(os.getcwd())
 from canonical.api2can_gen import TrainingExprGenerator
 from canonical.rule_based import RuleBasedCanonicalGenerator, param_sampler
+from swagger.entities import API, Param
+from swagger.swagger_analysis import SwaggerAnalyser
 
 app = Flask(__name__)
 CORS(app)
@@ -89,7 +88,7 @@ query_parser.add_argument('n', type=int, help="number of sampled values for the 
 TRANSLATORS = {
     "RULE",
     "SUMMARY",
-    "NEURAL"
+    # "NEURAL"
 }
 canonical_parser = reqparse.RequestParser()
 canonical_parser.add_argument('translators', type=str, action="append", location='args',
