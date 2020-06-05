@@ -112,7 +112,7 @@ class ParamUtils:
         if lowercase:
             t = t.lower()
 
-        t = re.sub('\s+', ' ', t).strip()
+        t = re.sub(r'\s+', ' ', t).strip()
         return t
 
     @staticmethod

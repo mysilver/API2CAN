@@ -63,7 +63,7 @@ def finalize_utterance(text, trim_sentences=True):
 
     canonical = canonical.translate({ord(k): None for k in digits})
 
-    canonical = re.sub("\s+", " ", canonical).strip()
+    canonical = re.sub(r"\s+", " ", canonical).strip()
     return canonical
 
 
@@ -83,7 +83,7 @@ def plural_to_singular_edit(canonical, resources=None):
         canonical = canonical.replace(" an a ", " a ")
         canonical = canonical.replace(" a an ", " a ")
 
-    canonical = LanguageChecker().grammar_corector(canonical, categories=['MISC']).lower()
+    canonical = LanguageChecker().grammar_corrector(canonical, categories=['MISC']).lower()
     tokens = tokenize(canonical, normilize_text=False)
 
     ret = []
